@@ -1,0 +1,12 @@
+## config file for biobombe_initial_ksweep.snakefile
+
+# set a basename for this run
+sample_basename: haptophyta_orthogroup
+
+# provide a link to quantification data (tsv/csv/xls(x)). File needs to have genes names as the rows, samples as the columns and NOT be zipped/gzipped.
+#I used TPM counts (from salmon) for now, but am not sure if that's best. This file will be downloaded to data/{sample_basename}.quant.tsv
+quant_data_httplink: https://osf.io/ek9nu/download
+
+adage_paramsfile: "config/initial_z_parameter_sweep_adage_MMETSP.tsv"
+
+tybalt_paramsfile: "config/initial_z_parameter_sweep_tybalt_MMETSP.tsv"

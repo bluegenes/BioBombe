@@ -1,3 +1,4 @@
+# this script is modified from 4.analyze-components/scripts/nbconverted/1.visualize-reconstruction.r
 # modified for snakemake by ntpierce, 2019
 
 suppressPackageStartupMessages(library(dplyr))

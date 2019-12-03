@@ -1,0 +1,12 @@
+## config file for biobombe_sequential_compression.snakefile
+
+# set a basename for this run
+sample_basename: haptophyta_orthogroup
+
+# provide a link to quantification data (tsv/csv/xls(x)). File needs to have genes names as the rows, samples as the columns and NOT be zipped/gzipped. 
+#I used TPM counts (from salmon) for now, but am not sure if that's best. This file will be downloaded to data/{sample_basename}.quant.tsv 
+quant_data_httplink: https://osf.io/ek9nu/download
+
+#paramsfile: "config/z_parameter_sweep_MMETSP.tsv"
+paramsfile: "config/z_parameter_sweep_MMETSP_test.tsv"
+

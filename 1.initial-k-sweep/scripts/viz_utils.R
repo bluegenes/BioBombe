@@ -261,7 +261,7 @@ plotFinalLoss <- function(select_df, algorithm, dataset, output_fig_dir,
       geom_point(aes(shape = epochs, size = batch_size, color = sparsity),
                  alpha = 0.7, position = position_jitter(w = 5, h = 0)) +
         scale_color_brewer(name = "Sparsity", palette = "Dark2") +
-        scale_size_manual(values = c(0.8, 0.4), name = "Batch Size") +
+        scale_size_manual(values = c(1, 0.8, 0.4, 0.2), name = "Batch Size") +
         guides(shape = guide_legend(order = 1),
                size = guide_legend(order = 2),
                color = guide_legend(order = 3))
