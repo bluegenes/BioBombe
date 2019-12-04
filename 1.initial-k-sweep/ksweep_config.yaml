@@ -7,6 +7,9 @@ sample_basename: haptophyta_orthogroup
 #I used TPM counts (from salmon) for now, but am not sure if that's best. This file will be downloaded to data/{sample_basename}.quant.tsv
 quant_data_httplink: https://osf.io/ek9nu/download
 
-adage_paramsfile: "config/initial_z_parameter_sweep_adage_MMETSP.tsv"
+#adage_paramsfile: "config/initial_z_parameter_sweep_adage_MMETSP.tsv"
+adage_paramsfile: "config/initial_z_parameter_sweep_adage_MMETSP_test.tsv"
 
-tybalt_paramsfile: "config/initial_z_parameter_sweep_tybalt_MMETSP.tsv"
+#tybalt_paramsfile: "config/initial_z_parameter_sweep_tybalt_MMETSP.tsv"
+tybalt_paramsfile: "config/initial_z_parameter_sweep_tybalt_MMETSP_test.tsv"
+

@@ -32,9 +32,9 @@ rule all:
          expand("model_results/ensemble_z_results/{zdim}_components_shuffled/{sample}_{zdim}_components_shuffled_{ext}", sample=SAMPLE, zdim=ZDIMS, ext=EXTS),
          expand("model_results_mad/ensemble_z_results/{zdim}_components/{sample}_{zdim}_components_{ext}", sample=SAMPLE, zdim=ZDIMS, ext=EXTS),
          expand("model_results_mad/ensemble_z_results/{zdim}_components_shuffled/{sample}_{zdim}_components_shuffled_{ext}", sample=SAMPLE, zdim=ZDIMS, ext=EXTS),
-         expand("model_results/reconstruction_cost_{sample}.tsv", sample=SAMPLE), expand("model_results_mad/reconstruction_cost_{sample}.tsv", sample=SAMPLE)
+#         expand("model_results/reconstruction_cost_{sample}.tsv", sample=SAMPLE), expand("model_results_mad/reconstruction_cost_{sample}.tsv", sample=SAMPLE)
 
-# note the last two results (from recontruct results rules) may not work 100%. I ended up working through the R scripts by hand and haven't checked changes for the automated version.
+# note, at the moment, this just runs all the zdims. I worked through the sample reconstruction by hand
 
 rule download_data:
     input: HTTP.remote(data_link)
@@ -176,43 +176,37 @@ rule train_models_shuffle_mad:
         python scripts/train_models_given_z.py   {input.train} {input.test} --mad_train {input.mad_train} --mad_test {input.mad_test} --basename {wildcards.sample} --paramsfile {params.paramsF} --zdim {wildcards.zdim} --outdir {params.out_dir} --shuffle
         """
 
+# from 4.analyze : not implemented in automated fashion yet
+#rule reconstruct_results:
+#    input:
+#         expand("model_results/ensemble_z_results/{zdim}_components/{sample}_{zdim}_components_{ext}", sample=SAMPLE, zdim=ZDIMS, ext=EXTS),
+#         expand("model_results/ensemble_z_results/{zdim}_components_shuffled/{sample}_{zdim}_components_shuffled_{ext}", sample=SAMPLE, zdim=ZDIMS, ext=EXTS),
+#    output:
+#        recon_cost = "model_results/reconstruction_cost_{sample}.tsv",
+#        recon_cost_fig = "model_results/figures/reconstruction_cost_{sample}.tsv",
+#        vae_recon_cost_fig = "model_results/figures/vae_training_reconstruction_{sample}.tsv"
+#    params:
+#        results_dir = "model_results",
+#        figures_dir = "model_results/figures",
+#        basename = lambda wildcards: "{wildcards.sample}",
+#    conda:
+#        "../environment.yml"
+#    script: #"../4.analyze-components/scripts/nbconverted/1.visualize-reconstruction.r"
+#        "scripts/visualize_reconstruction.R"
 
-rule reconstruct_results:
-    input:
-         expand("model_results/ensemble_z_results/{zdim}_components/{sample}_{zdim}_components_{ext}", sample=SAMPLE, zdim=ZDIMS, ext=EXTS),
-         expand("model_results/ensemble_z_results/{zdim}_components_shuffled/{sample}_{zdim}_components_shuffled_{ext}", sample=SAMPLE, zdim=ZDIMS, ext=EXTS),
-    output:
-        recon_cost = "model_results/reconstruction_cost_{sample}.tsv",
-        recon_cost_fig = "model_results/figures/reconstruction_cost_{sample}.tsv",
-        vae_recon_cost_fig = "model_results/figures/vae_training_reconstruction_{sample}.tsv"
-    params:
-        results_dir = "model_results",
-        figures_dir = "model_results/figures",
-        basename = lambda wildcards: "{wildcards.sample}",
-    conda:
-        "../environment.yml"
-    shell:
-        """
-        ../4.analyze-components/scripts/nbconverted/1.visualize-reconstruction.r
-        #"scripts/visualize_reconstruction.r"
-        """
-
-rule reconstruct_results_mad:
-    input:
-         expand("model_results_mad/ensemble_z_results/{zdim}_components/{sample}_{zdim}_components_{ext}", sample=SAMPLE, zdim=ZDIMS, ext=EXTS),
-         expand("model_results_mad/ensemble_z_results/{zdim}_components_shuffled/{sample}_{zdim}_components_shuffled_{ext}", sample=SAMPLE, zdim=ZDIMS, ext=EXTS)
-    output:
-        recon_cost = "model_results_mad/reconstruction_cost_{sample}.tsv",
-        recon_cost_fig = "model_results_mad/figures/reconstruction_cost_{sample}.tsv",
-        vae_recon_cost_fig = "model_results_mad/figures/vae_training_reconstruction_{sample}.tsv"
-    params:
-        results_dir = "model_results_mad",
-        figures_dir = "model_results_mad/figures",
-        basename = lambda wildcards: "{wildcards.sample}",
-    conda:
-        "../environment.yml"
-    shell:
-        """
-        ../4.analyze-components/scripts/nbconverted/1.visualize-reconstruction.r
-        #"scripts/visualize_reconstruction.r"
-        """
+#rule reconstruct_results_mad:
+#    input:
+#         expand("model_results_mad/ensemble_z_results/{zdim}_components/{sample}_{zdim}_components_{ext}", sample=SAMPLE, zdim=ZDIMS, ext=EXTS),
+#         expand("model_results_mad/ensemble_z_results/{zdim}_components_shuffled/{sample}_{zdim}_components_shuffled_{ext}", sample=SAMPLE, zdim=ZDIMS, ext=EXTS)
+#    output:
+#        recon_cost = "model_results_mad/reconstruction_cost_{sample}.tsv",
+#        recon_cost_fig = "model_results_mad/figures/reconstruction_cost_{sample}.tsv",
+#        vae_recon_cost_fig = "model_results_mad/figures/vae_training_reconstruction_{sample}.tsv"
+#    params:
+#        results_dir = "model_results_mad",
+#        figures_dir = "model_results_mad/figures",
+#        basename = lambda wildcards: "{wildcards.sample}",
+#    conda:
+#        "../environment.yml"
+#    script: #"../4.analyze-components/scripts/nbconverted/1.visualize-reconstruction.r"
+#        "scripts/visualize_reconstruction.R"
