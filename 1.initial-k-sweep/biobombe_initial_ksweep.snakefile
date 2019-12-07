@@ -26,7 +26,7 @@ data_link = config.get("quant_data_httplink", "https://osf.io/ek9nu/download")
 
 rule all:
     input: 
-        "figures/viz_results/z_parameter_final_loss_adage.png", "figures/viz_results/z_parameter_final_loss_tybalt.png",
+        f"figures/viz_results/{SAMPLE}_z_parameter_final_loss_adage.png", f"figures/viz_results/{SAMPLE}_z_parameter_final_loss_tybalt.png",
         expand("results/tybalt/{sample}_lr{learning_rate}_bs{batch_size}_e{epochs}_k{kappa}_numc{num_components}.tsv", sample= SAMPLE, learning_rate = tybalt_paramsD['sweep_values']['learning_rate'], batch_size = tybalt_paramsD['sweep_values']['batch_size'], epochs = tybalt_paramsD['sweep_values']['epochs'], kappa = tybalt_paramsD['sweep_values']['kappa'], num_components = tybalt_paramsD['sweep_values']['num_components']), 
         expand("results/adage/{sample}_lr{learning_rate}_bs{batch_size}_e{epochs}_sp{sparsity}_ns{noise}_numc{num_components}.tsv", sample= SAMPLE, learning_rate = adage_paramsD['sweep_values']['learning_rate'], batch_size = adage_paramsD['sweep_values']['batch_size'], epochs = adage_paramsD['sweep_values']['epochs'], sparsity = adage_paramsD['sweep_values']['sparsity'], noise = adage_paramsD['sweep_values']['noise'], num_components = adage_paramsD['sweep_values']['num_components']),
         
@@ -43,10 +43,12 @@ rule preprocess_data:
     input:
         "data/{sample}.quant.tsv"
     output:
-        processed = "data/{sample}.processed.tsv.gz",
-        train = "data/{sample}.processed.train.tsv.gz",
-        test = "data/{sample}.processed.test.tsv.gz",
-        mad = "data/{sample}.processed.mad.tsv.gz"
+        processed = "data/{sample}.processed.tsv.gz", # only needed file
+        #train = "data/{sample}.train.processed.tsv.gz",
+        #test = "data/{sample}.test.processed.tsv.gz",
+        #mad = "data/{sample}.mad.processed.tsv.gz",
+        #mad_test = "data/{sample}.mad.test10.processed.tsv.gz",
+        #mad_train = "data/{sample}.mad.train90.processed.tsv.gz",
     params:
         outdir = "data"
     conda:
@@ -56,6 +58,7 @@ rule preprocess_data:
         python scripts/process_expression_data.py {input} --mad --output_folder {params.outdir}
         """
 
+# not needed - scaling happens in train_models script
 rule preprocess_data_scale:
     input:
         "data/{sample}.quant.tsv"
@@ -127,8 +130,18 @@ rule visualize_paramsweep:
     params:
         dataset_name = SAMPLE,
     output: 
-        "figures/viz_results/z_parameter_final_loss_adage.png",
-        "figures/viz_results/z_parameter_final_loss_tybalt.png"
+        vae_loss_png="figures/viz_results/{sample}_z_parameter_final_loss_tybalt.png",
+        vae_training_png="figures/viz_results/{sample}_z_parameter_training_tybalt.png",
+        vae_best_params="results/{sample}_best_params_tybalt.tsv",
+        vae_best_model_png="results/{sample}_best_model_tybalt.png",
+
+        dae_loss_png="figures/viz_results/{sample}_z_parameter_final_loss_adage.png",
+        dae_best_params="results/{sample}_best_params_adage.tsv",
+        dae_best_model_png="figures/viz_results/{sample}_bestmodel_adage.png"
+    log:
+        "logs/{sample}_visualize_paramsweep_adage_tybalt.log"
+    params:
+        dataset_name = SAMPLE,
     conda:
         "../environment.yml"
     script:
@@ -220,11 +233,18 @@ rule visualize_dae_vae_paramsweep:
     input:
         dae = "results/dae/{sample}_paramsweep_summary.txt",
         vae = "results/vae/{sample}_paramsweep_summary.txt",
+    output:
+        vae_loss_png="figures/viz_results/{sample}_z_parameter_final_loss_vae.png",
+        vae_training_png="figures/viz_results/{sample}_z_parameter_training_vae.png",
+        vae_best_params="results/{sample}_best_params_vae.tsv",
+
+        dae_loss_png="figures/viz_results/{sample}_z_parameter_final_loss_dae.png",
+        dae_best_params="results/{sample}_best_params_dae.tsv",
+        dae_best_model_png="figures/viz_results/{sample}_bestmodel_dae.png"
+    log:
+        "logs/{sample}_visualize_dae_vae_paramsweep.log"
     params:
         dataset_name = SAMPLE, 
-    output:
-        "figures/viz_results/{sample}_z_parameter_final_loss_dae.png",
-        "figures/viz_results/{sample}_z_parameter_final_loss_vae.png"
     script:
-        "scripts/visualize-parameter-sweep.r"
+        "scripts/visualize-parameter-sweep.R"
 
